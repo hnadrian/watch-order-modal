@@ -7,10 +7,11 @@ import Button from "@mui/material/Button";
 import Box from '@mui/material/Box';
 
 interface WatchOrderModalProps {
-
+    open: boolean;
+    handleClose: () => void;
 }
 
-const WatchOrderModal = () => {
+const WatchOrderModal: React.FC<WatchOrderModalProps> = ({ open, handleClose }) => {
     return (
         <div>
 
