@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import Button from "@mui/material/Button";
@@ -8,7 +9,6 @@ import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import DialogTitle from "@mui/material/DialogTitle";
 
 interface WatchOrderModalProps {
   open: boolean;
@@ -28,6 +28,49 @@ const colors = {
 
 const WatchOrderModal = (props: WatchOrderModalProps) => {
   const { open, onClose } = props;
+
+
+  const [orderData, setOrderData] = useState<any>(null);
+
+  // Fetching data from API
+  useEffect(() => {
+    const fetchOrderData = async () => {
+      try {
+        const response = await axios.get(
+          "https://eb863a74-7a4e-4daf-9540-d2db8470c18e.mock.pstmn.io/marketplace/orders/123"
+        );
+        setOrderData(response.data);
+      } catch (error) {
+        console.error("Error fetching order data:", error);
+      }
+    };
+
+    fetchOrderData();
+  }, []);
+
+  // Catch if fetching is not done
+  if (!orderData) {
+    return <div></div>;
+  }
+  
+  // Extracting data fetched into constants
+  const {
+    listing: {
+      model: { displayName, brand, referenceNumber },
+      manufactureYear,
+      condition,
+      images,
+    },
+    salePriceCents,
+    commissionRateBips,
+    sellerFeeCents,
+    payoutAmountCents,
+  } = orderData;
+
+  // Converting cents to display format
+  const centsToDollars = (cents: number) => {
+    return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
+  };
 
   return (
   <Dialog
@@ -135,20 +178,20 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
                 <Divider sx={{ mt: 1, mb: 1 }}/>
                 <Box display="flex" alignItems="center">
                   <Box flexGrow={1}>
-                    <Typography variant="body2" color="textPrimary">
-                      {/* Watch display name */ "ABC"} {/* Watch  name */ "abc"}{" "}
-                      {/* ref number */ "0123456"}
+                    <Typography variant="body2" color={colors.primaryGreen} sx={{ mb: 1 }}>
+                      {displayName}<br/>
+                      {brand.displayName} {referenceNumber}
                     </Typography>
                     <Typography
                       variant="body2"
                       color={colors.secondaryBillingText}
                     >
-                      {/* condition */ "NEW"} / {/* Year */ 2011}
+                      {condition} / {manufactureYear}
                     </Typography>
                   </Box>
                   <Box>
                     <img
-                      src="https://getbezel.mo.cloudinary.net/sandbox/1583bb64-0df2-4a69-a10d-119e464ab6fe.png"
+                      src={images[0].image.url}
                       //alt={`${/* Watch display name */} ${/* Watch  name */}`}
                       style={{ width: 75, height: 75, borderRadius: "12px" }}
                     />
@@ -170,7 +213,7 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
                         color={colors.secondaryBillingText}
                         sx={{ mb: 1 }}
                       >
-                        Level 1 Commission ({/* commission percentage */}%)
+                        Level 1 Commission ({(commissionRateBips / 100).toFixed(1)}%)
                       </Typography>
                       <Typography
                         variant="body2"
@@ -186,31 +229,36 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
                     <Grid item xs={6}>
                       <Typography
                         variant="body2"
-                        color="textSecondary"
+                        color={colors.primaryGreenText}
                         align="right"
+                        fontWeight={"bold"}
+                        sx={{ mb: 1 }}
                       >
-                        {/* price */}
+                        {centsToDollars(salePriceCents)}
                       </Typography>
                       <Typography
                         variant="body2"
                         color={colors.secondaryBillingText}
                         align="right"
+                        sx={{ mb: 1 }}
                       >
-                        {/* comission price */}
+                        {centsToDollars((salePriceCents * commissionRateBips) / 10000)}
                       </Typography>
                       <Typography
                         variant="body2"
                         color={colors.secondaryBillingText}
                         align="right"
+                        sx={{ mb: 1 }}
                       >
-                        {/* Seller fee */}
+                        {centsToDollars(sellerFeeCents)}
                       </Typography>
                       <Typography
                         variant="body2"
                         color={colors.secondaryGreen}
                         align="right"
+                        sx={{ mb: 1 }}
                       >
-                        {/* Bezel auth */}
+                        Free
                       </Typography>
                     </Grid>
                   </Grid>
@@ -234,7 +282,7 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
                         align="right"
                         fontWeight={"bold"}
                       >
-                        {/* total earning */}
+                        {centsToDollars(payoutAmountCents)}
                       </Typography>
                     </Grid>
                   </Grid>
