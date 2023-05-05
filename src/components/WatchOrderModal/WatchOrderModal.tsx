@@ -8,10 +8,10 @@ import Box from '@mui/material/Box';
 
 interface WatchOrderModalProps {
     open: boolean;
-    handleClose: () => void;
+    onClose: () => void;
 }
 
-const WatchOrderModal: React.FC<WatchOrderModalProps> = ({ open, handleClose }) => {
+const WatchOrderModal: React.FC<WatchOrderModalProps> = ({ open, onClose }) => {
     return (
         <div>
 
