@@ -24,7 +24,7 @@ function App() {
         alignItems="center"
         minHeight="100vh"
       >
-        <Button variant="contained" color="success" onClick={openModal}>
+        <Button variant="contained" style={{ backgroundColor:"#1A3A32" }} onClick={openModal}>
           Open Order
         </Button>
       </Box>
