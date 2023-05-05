@@ -47,6 +47,28 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
     fetchOrderData();
   }, []);
 
+  // POST request for accepting the deal
+  const handleAcceptSale = async () => {
+    try {
+      await axios.post(
+        "https://eb863a74-7a4e-4daf-9540-d2db8470c18e.mock.pstmn.io/marketplace/orders/123/accept"
+      );
+    } catch (error) {
+      console.error("Error accepting sale:", error);
+    }
+  };
+
+  // POST request for rejecting the deal
+  const handleRejectSale = async () => {
+    try {
+      await axios.post(
+        "https://eb863a74-7a4e-4daf-9540-d2db8470c18e.mock.pstmn.io/marketplace/orders/123/decline"
+      );
+    } catch (error) {
+      console.error("Error rejecting sale:", error);
+    }
+  };
+
   // Catch if fetching is not done
   if (!orderData) {
     return <div></div>;
@@ -148,6 +170,7 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
                       fontWeight: "medium",
                     }}
                     fullWidth
+                    onClick={handleAcceptSale}
                   >
                     Accept sale
                   </Button>
@@ -163,6 +186,7 @@ const WatchOrderModal = (props: WatchOrderModalProps) => {
                       fontWeight: "medium",
                     }}
                     fullWidth
+                    onClick={handleRejectSale}
                   >
                     Reject sale
                   </Button>
